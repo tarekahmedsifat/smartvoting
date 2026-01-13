@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { BallotConfig, Nominee } from '../types';
 
@@ -23,11 +22,11 @@ export default function SetupPage({ config, setConfig }: SetupProps) {
   };
 
   const addNominee = () => {
-    if (!newName || !newIcon) return;
+    if (!newName) return;
     const nominee: Nominee = {
       id: crypto.randomUUID(),
       name: newName,
-      iconBase64: newIcon
+      iconBase64: newIcon || '' // Icon is optional but recommended
     };
     setConfig(prev => ({
       ...prev,
@@ -35,6 +34,9 @@ export default function SetupPage({ config, setConfig }: SetupProps) {
     }));
     setNewName('');
     setNewIcon(null);
+    // Reset file input
+    const fileInput = document.getElementById('icon-upload') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
   };
 
   const removeNominee = (id: string) => {
@@ -47,89 +49,134 @@ export default function SetupPage({ config, setConfig }: SetupProps) {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
       <header>
-        <h1 className="text-3xl font-bold text-slate-900">Voting Configuration</h1>
-        <p className="text-slate-600">Set up your nominees and ballot rules before analysis.</p>
+        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Ballot Configuration</h1>
+        <p className="text-slate-600">Define the symbols and candidates the AI should look for on the ballots.</p>
       </header>
 
-      <section className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-        <h2 className="text-xl font-semibold mb-4 text-slate-800">1. Ballot Rules</h2>
-        <div className="flex items-center space-x-4">
-          <label className="text-sm font-medium text-slate-700">How many selections per ballot?</label>
+      <section className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-slate-800">1. Voting Rules</h2>
+          <div className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Parameters</div>
+        </div>
+        <div className="flex items-center space-x-6">
+          <div className="flex-1">
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Max Selections Allowed</label>
+            <p className="text-xs text-slate-500 mb-3">How many votes can a single ballot contain before being rejected?</p>
+          </div>
           <input 
             type="number"
             min="1"
             value={config.allowedSelections}
             onChange={(e) => setConfig(prev => ({ ...prev, allowedSelections: parseInt(e.target.value) || 1 }))}
-            className="w-20 p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none"
+            className="w-24 p-3 text-center text-lg font-bold bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all"
           />
         </div>
       </section>
 
-      <section className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-        <h2 className="text-xl font-semibold mb-4 text-slate-800">2. Manage Nominees</h2>
+      <section className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-slate-800">2. Nominees & Symbols</h2>
+          <div className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Nominee List</div>
+        </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          <div className="p-4 border border-dashed border-slate-300 rounded-lg bg-slate-50 space-y-4">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500">Add New Nominee</h3>
-            <div>
-              <label className="block text-xs font-medium text-slate-500 mb-1">Nominee Name (e.g., Cat, Radish)</label>
-              <input 
-                type="text"
-                placeholder="Name"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                className="w-full p-2 border border-slate-300 rounded-md mb-3"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-500 mb-1">Symbol Icon</label>
-              <input 
-                type="file"
-                accept="image/*"
-                onChange={handleIconUpload}
-                className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-              />
-            </div>
-            {newIcon && (
-              <div className="mt-2 flex items-center space-x-4">
-                 <img src={newIcon} alt="Preview" className="w-12 h-12 rounded object-cover border border-slate-200" />
-                 <span className="text-xs text-slate-400">Preview</span>
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+          <div className="lg:col-span-2 space-y-5">
+            <div className="p-5 border border-indigo-100 rounded-2xl bg-indigo-50/30 space-y-4">
+              <h3 className="text-sm font-bold text-indigo-900 uppercase tracking-widest">New Nominee Entry</h3>
+              
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Symbol Name / Label</label>
+                <input 
+                  type="text"
+                  placeholder="e.g., Cat, Dog, Radish"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  className="w-full p-3 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all"
+                />
               </div>
-            )}
-            <button 
-              onClick={addNominee}
-              disabled={!newName || !newIcon}
-              className="w-full py-2 bg-indigo-600 text-white rounded-md font-medium hover:bg-indigo-700 disabled:opacity-50 transition-colors"
-            >
-              Add to List
-            </button>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Optional Visual Icon</label>
+                <div className="relative group">
+                  <input 
+                    id="icon-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleIconUpload}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  />
+                  <div className="p-4 border-2 border-dashed border-slate-300 rounded-xl bg-white text-center group-hover:border-indigo-400 transition-colors">
+                    {newIcon ? (
+                      <div className="flex items-center justify-center gap-3">
+                        <img src={newIcon} alt="Preview" className="w-10 h-10 rounded-lg object-cover shadow-sm" />
+                        <span className="text-xs font-medium text-slate-600">Symbol Loaded</span>
+                      </div>
+                    ) : (
+                      <span className="text-xs font-medium text-slate-400">Click to upload symbol image</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <button 
+                onClick={addNominee}
+                disabled={!newName}
+                className="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-200 hover:bg-indigo-700 active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all"
+              >
+                Add to Ballot
+              </button>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500">Nominees ({config.nominees.length})</h3>
-            {config.nominees.length === 0 ? (
-              <p className="text-slate-400 italic text-sm">No nominees added yet.</p>
-            ) : (
-              <div className="max-h-64 overflow-y-auto space-y-2 pr-2">
-                {config.nominees.map(n => (
-                  <div key={n.id} className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg group">
-                    <div className="flex items-center space-x-3">
-                      <img src={n.iconBase64} alt={n.name} className="w-8 h-8 rounded-full object-cover border border-slate-100" />
-                      <span className="font-medium text-slate-700">{n.name}</span>
+          <div className="lg:col-span-3">
+            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 min-h-[300px]">
+              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 px-2">Registered Symbols ({config.nominees.length})</h3>
+              
+              {config.nominees.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-slate-400">
+                  <svg className="w-12 h-12 mb-3 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                  <p className="text-sm italic">No nominees defined yet.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {config.nominees.map(n => (
+                    <div key={n.id} className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-xl group hover:border-indigo-300 transition-all shadow-sm">
+                      <div className="flex items-center space-x-3">
+                        {n.iconBase64 ? (
+                          <img src={n.iconBase64} alt={n.name} className="w-10 h-10 rounded-lg object-cover border border-slate-100" />
+                        ) : (
+                          <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400">
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                          </div>
+                        )}
+                        <span className="font-bold text-slate-700">{n.name}</span>
+                      </div>
+                      <button 
+                        onClick={() => removeNominee(n.id)}
+                        className="p-2 text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                        aria-label="Remove nominee"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                      </button>
                     </div>
-                    <button 
-                      onClick={() => removeNominee(n.id)}
-                      className="text-slate-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
+
+      <div className="flex justify-center pt-4">
+        <a 
+          href="#/analysis"
+          className={`px-10 py-4 bg-slate-900 text-white rounded-2xl font-bold shadow-xl transition-all hover:bg-indigo-600 active:scale-95 ${config.nominees.length === 0 ? 'opacity-20 pointer-events-none' : ''}`}
+        >
+          Proceed to Ballot Analysis
+        </a>
+      </div>
     </div>
   );
 }
