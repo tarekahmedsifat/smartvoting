@@ -153,7 +153,7 @@ export default function AnalysisPage({ config, setResults }: AnalysisProps) {
     <div className="max-w-4xl mx-auto p-6 space-y-8">
       <header>
         <h1 className="text-3xl font-bold text-slate-900">Run Ballot Analysis</h1>
-        <p className="text-slate-600">Upload your PDF ballot file to begin automated AI counting.</p>
+        <p className="text-slate-600">Upload your PDF ballot file to begin automated counting.</p>
       </header>
 
       <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-center text-center space-y-6">
@@ -188,7 +188,7 @@ export default function AnalysisPage({ config, setResults }: AnalysisProps) {
               : 'bg-indigo-600 text-white hover:bg-indigo-700 active:transform active:scale-95'
           }`}
         >
-          {isProcessing ? `Processing Page ${progress.current}...` : 'Start AI Counting'}
+          {isProcessing ? `Processing Page ${progress.current}...` : 'Start Counting'}
         </button>
 
         {config.nominees.length === 0 && (
