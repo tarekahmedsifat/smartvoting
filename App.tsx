@@ -15,7 +15,7 @@ const Navigation = () => {
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">V</div>
-          <span className="font-bold text-xl tracking-tight text-slate-800">SmartVote AI</span>
+          <span className="font-bold text-xl tracking-tight text-slate-800">SmartVoting system</span>
         </div>
         <div className="flex space-x-1">
           <Link
@@ -90,7 +90,7 @@ export default function App() {
           </Routes>
         </main>
         <footer className="bg-slate-100 border-t border-slate-200 py-6 text-center text-slate-500 text-sm">
-          &copy; {new Date().getFullYear()} SmartVote AI Ballot Processing System
+          &copy; {new Date().getFullYear()} SmartVoting Ballot Processing System
         </footer>
       </div>
     </HashRouter>
