@@ -50,7 +50,7 @@ export default function SetupPage({ config, setConfig }: SetupProps) {
     <div className="max-w-4xl mx-auto p-6 space-y-8">
       <header>
         <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Ballot Configuration</h1>
-        <p className="text-slate-600">Define the symbols and candidates the AI should look for on the ballots.</p>
+        <p className="text-slate-600">Define the symbols and candidates the we should look for on the ballots.</p>
       </header>
 
       <section className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
