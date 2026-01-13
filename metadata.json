@@ -1,0 +1,5 @@
+{
+  "name": "Smart Ballot Analyzer",
+  "description": "An AI-powered voting ballot analyzer that uses Gemini Vision to identify checked symbols in PDF ballots and calculate results with validation rules.",
+  "requestFramePermissions": []
+}
